@@ -1,0 +1,16 @@
+body {
+	background-color: #000;
+	margin: 24px;
+}
+
+#canvas {
+	background-color: #333;
+	border: 1px solid rgb(100,100,100);
+}
+
+#debugging {
+	color: white;
+	position:absolute;
+	top:0;
+	left:0;
+}
