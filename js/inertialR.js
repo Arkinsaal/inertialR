@@ -24,18 +24,14 @@ var opponents = [],
 	trackBlocks = [],
 	keys = [];
 
-/*trackBlocks.push(new block(-10,1310,-10,5));
-trackBlocks.push(new block(-10,5,0,900));
-trackBlocks.push(new block(1295,1310,0,900));
-trackBlocks.push(new block(-10,1310,895,910));*/
-
-trackBlocks.push(new block(600,800,200,400));
+trackBlocks.push(new block(0,1300,0,900));
 
 var startFinish = {
 	l: 0,
 	t: 0,
 	r: 200,
-	touchedCount:0
+	touchedCount:0,
+	txtAngle: Math.PI*2
 };
 
 var constant = {
@@ -53,129 +49,75 @@ var imageObj = new Image();
 	imageObj.src = '../rs/flagTexture.png';
 
 
-function handleBlackhole(entity, bH) {
-	if (circleCollision(entity,bH)) {
-
-		var lDiff = entity.l - bH.l,
-			tDiff = entity.t - bH.t,
-			aDiff = Math.sqrt(Math.pow(lDiff, 2)+Math.pow(tDiff, 2)),
-			dPerc = (((bH.r+10) - Math.abs(aDiff)) / bH.r),
-			multplier = dPerc*bH.gravity*deltaT;
-
-		entity.speedV = entity.speedV - (tDiff*multplier);
-		entity.speedH = entity.speedH - (lDiff*multplier);
-
-		if (dPerc > 0.8) {
-			entity.speedV = entity.speedV*0.999;
-			entity.speedH = entity.speedH*0.999;
-		};
-	};
-};
-
-function handleBlock(entity, block) {
-	var newL = block.l + entity.speedH,
-		newT = block.t + entity.speedV;
-	if (verticalCollision(newT, block)) {
-		entity.speedV = entity.speedV*-0.3;
-		entity.speedH = entity.speedH*0.3;
-		entity.yaw = (entity.heading%45)*entity.speedH/20;
-	} else {
-		entity.t = newT;
-	};
-	if (horizontalCollision(newL, block)) {
-		entity.speedV = entity.speedV*0.3;
-		entity.speedH = entity.speedH*-0.3;
-		entity.yaw = (entity.heading%45)*entity.speedV/20;
-	} else {
-		entity.l = newL;
-	};
-};
-
-
 var updateEntity = function (entity, deltaT, opp) {
 
-	if (!opp) {
-		if (player.keys[37]) entity.yaw -= constant.turnRate;
-		if (player.keys[39]) entity.yaw += constant.turnRate;
-		if (!player.keys[37] && entity.yaw<0) {
-			entity.yaw += constant.turnRateDecel;
-			if (entity.yaw > 0) entity.yaw = 0;
-		};
-		if (!player.keys[39] && entity.yaw>0) {
-			entity.yaw -= constant.turnRateDecel;
-			if (entity.yaw < 0) entity.yaw = 0;
-		};
+	if (player.keys[37]) entity.yaw -= constant.turnRate;
+	if (player.keys[39]) entity.yaw += constant.turnRate;
+	if (!player.keys[37] && entity.yaw<0) {
+		entity.yaw += constant.turnRateDecel;
+		if (entity.yaw > 0) entity.yaw = 0;
+	};
+	if (!player.keys[39] && entity.yaw>0) {
+		entity.yaw -= constant.turnRateDecel;
+		if (entity.yaw < 0) entity.yaw = 0;
+	};
 
-		entity.heading += entity.yaw * deltaT;
-		entity.speedV = entity.speedV*constant.friction;
-		entity.speedH = entity.speedH*constant.friction;
+	entity.heading += entity.yaw * deltaT;
+	entity.speedV = entity.speedV*constant.friction;
+	entity.speedH = entity.speedH*constant.friction;
 
-		for (var i=0; i < trackBlocks.length; i++) {
-			var newL = entity.l + entity.speedH,
-				newT = entity.t + entity.speedV;
-			if (blockCollision(newL, newT, trackBlocks[i]) && entity.speedV > 0) {
-				entity.speedV = entity.speedV*-0.3;
-				entity.speedH = entity.speedH*-0.3;
-			} else {
-				entity.t = newT;
-				entity.l = newL;
-			};
-			/*if (verticalCollision(newT, newL, trackBlocks[i])) {
-				entity.speedV = entity.speedV*-0.3;
-				entity.speedH = entity.speedH*0.3;
-				entity.yaw = (entity.heading%45)*entity.speedH/20;
-			} else {
-				entity.t = newT;
-			};
-			if (horizontalCollision(newL, newT, trackBlocks[i])) {
-				entity.speedV = entity.speedV*0.3;
-				entity.speedH = entity.speedH*-0.3;
-				entity.yaw = (entity.heading%45)*entity.speedV/20;
-			} else {
-				entity.l = newL;
-			};*/
-		};
-		for (var i=0; i<currentMatch.checkpoints.length; i++) {
-			if (circleCollision(entity,currentMatch. checkpoints[i])) {
-				if (!currentMatch.checkpoints[i].touched) {
-					entity.touchedCount++;
-					playerTouchedCheckpoint(player);
-				};
-				currentMatch.checkpoints[i].touched = true;
-			};
-		};
+	var newL = entity.l + entity.speedH,
+		newT = entity.t + entity.speedV;
 
-		/*for (var i=0; i<currentMatch.obstacles.length; i++) {
-			var thisObstacle = currentMatch.obstacles[i];
-			if (thisObstacle.type=='block') handleBlock(entity, thisObstacle);
-			else if (thisObstacle.type=='blackhole') handleBlackhole(entity, thisObstacle);
-		};*/
+    if (verticalCollision(newT, newL, trackBlocks[0])) {
+        entity.speedV = entity.speedV*-0.3;
+        entity.speedH = entity.speedH*0.3;
+        entity.yaw = (entity.heading%45)*entity.speedH/20;
+		entity.speedAdjust=0;
+    } else {
+        entity.t = newT;
+    };
+    if (horizontalCollision(newL, newT, trackBlocks[0])) {
+        entity.speedV = entity.speedV*0.3;
+        entity.speedH = entity.speedH*-0.3;
+        entity.yaw = (entity.heading%45)*entity.speedV/20;
+		entity.speedAdjust=0;
+    } else {
+        entity.l = newL;
+    };
 
-		if (entity.touchedCount==currentMatch.checkpoints.length && circleCollision(entity, startFinish)) {
-			if (entity.lap==currentMatch.laps) {
-				socket.emit('gameFinish', {
-					game: currentMatch.guid,
-					player: player
-				});
-			} else {
-				entity.lap++;
+	for (var i=0; i<currentMatch.blackholes.length; i++) {
+		handleBlackhole(entity, currentMatch.blackholes[i], deltaT);
+	};
+	for (var i=0; i<currentMatch.checkpoints.length; i++) {
+		handleCheckpoint(entity, currentMatch.checkpoints[i]);
+	};
 
-				entity.touchedCount=0;
-				entity.lapTimes.unshift(0);
+	if (entity.touchedCount==currentMatch.checkpoints.length && circleCollision(entity, startFinish)) {
+		if (entity.lap==currentMatch.laps) {
+			socket.emit('gameFinish', {
+				game: currentMatch.guid,
+				player: player
+			});
+		} else {
+			entity.lap++;
+			entity.touchedCount=0;
+			entity.lapTimes.unshift(0);
 
-				for (var i=0; i<currentMatch.checkpoints.length; i++) {
-					currentMatch.checkpoints[i].touched = false;
-					currentMatch.checkpoints[i].r = 70;
-				};
+			for (var i=0; i<currentMatch.checkpoints.length; i++) {
+				currentMatch.checkpoints[i].touched = false;
 			};
 		};
 	};
 
-	if (player.keys[38]) {
+	if (entity.keys[38]) {
 		var headingRads = entity.heading * constant.degsToRads,
-			accelChange = constant.accelRate * deltaT
+			accelChange = (constant.accelRate + entity.speedAdjust) * deltaT
+		entity.speedAdjust+=(0.0001*deltaT);
 		entity.speedV += Math.cos(headingRads) * accelChange;
 		entity.speedH -= Math.sin(headingRads) * accelChange;
+	} else {
+		entity.speedAdjust=0;
 	};
 };
 
@@ -331,8 +273,6 @@ function beginEvent() {
 var render = function () {
 	ctx.clearRect ( 0 , 0 , canvas.width, canvas.height );
 
-	drawBoundary();
-
 	drawStartFinish();
 	drawCheckPoints();
 
@@ -341,11 +281,6 @@ var render = function () {
 
 	drawEngineTrails();
 	drawObstacles();
-
-	//drawScoreBoard(currentMatch, player, opponents);
-	/*for (var i=0;i<opponents.length;i++) {
-
-	};*/
 };
 
 // The main game loop

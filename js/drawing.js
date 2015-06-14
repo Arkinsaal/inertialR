@@ -2,94 +2,88 @@ function drawPlayer() {
 
 	var pHead = (player.heading)*constant.degsToRads;
 
-    ctx.save();
-
+	ctx.save();
 	    ctx.strokeStyle = player.color;
         ctx.fillStyle = player.color;
 		ctx.shadowColor = player.color;
 		ctx.shadowBlur = 40;
-		ctx.shadowOffsetX = 0;
-		ctx.shadowOffsetY = 0;
 		ctx.lineWidth = 3;
 		ctx.translate(player.l-10, player.t-10);
 		ctx.rotate(pHead);
 
 		// core
 		ctx.beginPath();
-		ctx.shadowBlur = 0;
 		ctx.arc(0, -2, 4, 0, 2*Math.PI, false);
 		ctx.fill();
 
 		// inner
 		ctx.beginPath();
-		ctx.shadowBlur = 0;
 		ctx.arc(0, 6, 8, 0.75*Math.PI, (2*Math.PI)+(0.25*Math.PI), false);
 		ctx.stroke();
 
 		// outer
 		ctx.beginPath();
+		ctx.arc(2, 0, 15, 0.65*Math.PI, 1.46*Math.PI, false);
 		ctx.arc(-2, 0, 15, 1.54*Math.PI, (2*Math.PI)+(0.35*Math.PI), false);
 		ctx.stroke();
-		ctx.beginPath();
-		ctx.arc(2, 0, 15, 0.65*Math.PI, 1.46*Math.PI, false);
-		ctx.stroke();
 
-
-		ctx.shadowBlur = 40;
 		ctx.beginPath();
-		ctx.arc(-6, -14, 3, Math.PI-1, 0, false);
-		ctx.stroke();
+		ctx.arc(-6, -14, 5, Math.PI-1, 0, false);
 		ctx.fill();
 
 		ctx.beginPath();
-		ctx.arc(6, -14, 3, -Math.PI, 1, false);
-		ctx.stroke();
+		ctx.arc(6, -14, 5, -Math.PI, 1, false);
 		ctx.fill();
 
 		if (player.keys[38]) {
 			engineTrailsArray.push(new EngineTrail([player.l-10, player.t-10], pHead, player.color));
 		};
-		/*if (keys[37] || keys[39]) {
-		};*/
 	ctx.restore();
+
+    
 };
 
 function drawOpponents() {
 	for (var j=0;j<opponents.length;j++) {
+		var thisOpponent = opponents[j],
+			opHead = thisOpponent.heading*constant.degsToRads,
+			opL = thisOpponent.l-10,
+			opT = thisOpponent.t-10;
         ctx.save();
-	        ctx.strokeStyle = opponents[j].color;
-	        ctx.fillStyle = opponents[j].color;
-			ctx.shadowColor = opponents[j].color;
+	        ctx.strokeStyle = thisOpponent.color;
+	        ctx.fillStyle = thisOpponent.color;
+			ctx.shadowColor = thisOpponent.color;
 			ctx.shadowBlur = 40;
-			ctx.shadowOffsetX = 0;
-			ctx.shadowOffsetY = 0;
 			ctx.lineWidth = 3;
-			ctx.translate(opponents[j].l-10, opponents[j].t-10);
-			ctx.rotate((opponents[j].heading)*constant.degsToRads);
-
-			// outer
-			ctx.beginPath();
-			ctx.arc(-2, 0, 15, 1.54*Math.PI, (2*Math.PI)+(0.35*Math.PI), false);
-			ctx.stroke();
-			ctx.beginPath();
-			ctx.arc(2, 0, 15, 0.65*Math.PI, 1.46*Math.PI, false);
-			ctx.stroke();
-
-			// inner
-			ctx.beginPath();
-			ctx.shadowBlur = 0;
-			ctx.arc(0, 6, 8, 0.75*Math.PI, (2*Math.PI)+(0.25*Math.PI), false);
-			ctx.stroke();
+			ctx.translate(opL, opT);
+			ctx.rotate(opHead);
 
 			// core
 			ctx.beginPath();
-			ctx.shadowBlur = 0;
 			ctx.arc(0, -2, 4, 0, 2*Math.PI, false);
-			ctx.stroke();
 			ctx.fill();
 
-			if (opponents[j].keys[38]) {
-				engineTrailsArray.push(new EngineTrail([opponents[j].l-10, opponents[j].t-10], (opponents[j].heading)*constant.degsToRads, opponents[j].color));
+			// inner
+			ctx.beginPath();
+			ctx.arc(0, 6, 8, 0.75*Math.PI, (2*Math.PI)+(0.25*Math.PI), false);
+			ctx.stroke();
+
+			// outer
+			ctx.beginPath();
+			ctx.arc(2, 0, 15, 0.65*Math.PI, 1.46*Math.PI, false);
+			ctx.arc(-2, 0, 15, 1.54*Math.PI, (2*Math.PI)+(0.35*Math.PI), false);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(-6, -14, 5, Math.PI-1, 0, false);
+			ctx.fill();
+
+			ctx.beginPath();
+			ctx.arc(6, -14, 5, -Math.PI, 1, false);
+			ctx.fill();
+
+			if (thisOpponent.keys[38]) {
+				engineTrailsArray.push(new EngineTrail([opL, opT], opHead, thisOpponent.color));
 			};
 
 		ctx.restore();
@@ -97,7 +91,6 @@ function drawOpponents() {
 };
 
 function drawCheckPoints() {
-
     ctx.save();
 		ctx.strokeStyle = 'rgb(50,255,50)';
 		ctx.lineWidth = 5;
@@ -106,52 +99,47 @@ function drawCheckPoints() {
 		ctx.shadowOffsetX = 0;
 		ctx.shadowOffsetY = 0;
 		for (var i=0; i < currentMatch.checkpoints.length; i++) {
-			if (currentMatch.checkpoints[i].touched && currentMatch.checkpoints[i].r>0) {
-				currentMatch.checkpoints[i].r -= delta * 0.2;
-				if (currentMatch.checkpoints[i].r<0) currentMatch.checkpoints[i].r=0;
+			var cP = currentMatch.checkpoints[i];
+			if (cP.touched && cP.r>0) {
+				cP.r -= delta * 0.2;
+				if (cP.r<0) cP.r=0;
+			} else if (!cP.touched && cP.r < 70) {
+				cP.r += delta * 0.4;
+				if (cP.r>70) cP.r=70;
 			};
 			ctx.beginPath();
-			ctx.arc(currentMatch.checkpoints[i].l, currentMatch.checkpoints[i].t, currentMatch.checkpoints[i].r, 0, 2 * Math.PI, false);
+			ctx.arc(cP.l, cP.t, cP.r, 0, 2 * Math.PI, false);
 			ctx.closePath();
 			ctx.stroke();
+			if (cP.r>0) drawTextAlongArc(ctx, 'Checkpoint', cP.l, cP.t, cP.r - 10, (Math.PI/2), cP.txtAngle, 'green');
+			cP.txtAngle+=0.01;
 		};
 	ctx.restore();
 };
 
 function drawObstacles() {
-	for (var i=0; i < currentMatch.obstacles.length;i++) {
-		if (currentMatch.obstacles[i].type=='blackhole') {
-			ctx.save();
-				var tO = currentMatch.obstacles[i];
-				var grd=ctx.createRadialGradient(tO.l,tO.t,10,tO.l,tO.t,tO.r);
-				grd.addColorStop(0,"black");
-				grd.addColorStop(1,"transparent");
-				ctx.beginPath();
-			    ctx.fillStyle = grd;
-				ctx.arc(tO.l, tO.t, tO.r, 0, 2 * Math.PI, false);
-				ctx.closePath();
-				ctx.fill();
-			ctx.restore();
-		} else {
-			ctx.save();
-			    ctx.fillStyle = "rgb(33,40,48)";
-				ctx.lineWidth = 2;
-			    ctx.strokeStyle = "rgb(100,100,100)";
-		        ctx.fillRect(currentMatch.obstacles[i].l, currentMatch.obstacles[i].t, currentMatch.obstacles[i].r-currentMatch.obstacles[i].l, currentMatch.obstacles[i].b-currentMatch.obstacles[i].t);
-				ctx.strokeRect(currentMatch.obstacles[i].l, currentMatch.obstacles[i].t, currentMatch.obstacles[i].r-currentMatch.obstacles[i].l, currentMatch.obstacles[i].b-currentMatch.obstacles[i].t);
-			ctx.restore();
-		}
+	for (var i=0; i < currentMatch.blackholes.length;i++) {
+		var bH = currentMatch.blackholes[i];
+		ctx.save();
+			var tO = currentMatch.blackholes[i];
+			var grd=ctx.createRadialGradient(tO.l,tO.t,10,tO.l,tO.t,tO.r);
+			grd.addColorStop(0,"black");
+			grd.addColorStop(1,"transparent");
+			ctx.beginPath();
+		    ctx.fillStyle = grd;
+			ctx.arc(tO.l, tO.t, tO.r, 0, 2 * Math.PI, false);
+			ctx.closePath();
+			ctx.fill();
+		ctx.restore();
 	};
-}
-
-function drawBoundary() {
-	for (var i=0; i < trackBlocks.length;i++) {
+	for (var i=0; i < currentMatch.trackBlocks.length;i++) {
+		var tB = currentMatch.trackBlocks[i];
 		ctx.save();
 		    ctx.fillStyle = trackBlocks[i].color;
 			ctx.lineWidth = 2;
 		    ctx.strokeStyle = (trackBlocks[i].active)?"rgb(175,175,175)":"rgb(100,100,100)";
-	        ctx.fillRect(trackBlocks[i].l, trackBlocks[i].t, trackBlocks[i].r-trackBlocks[i].l, trackBlocks[i].b-trackBlocks[i].t);
-			ctx.strokeRect(trackBlocks[i].l, trackBlocks[i].t, trackBlocks[i].r-trackBlocks[i].l, trackBlocks[i].b-trackBlocks[i].t);
+		    ctx.fillRect(tB.l, tB.t, tB.r-tB.l, tB.b-tB.t);
+			ctx.strokeRect(tB.l, tB.t, tB.r-tB.l, tB.b-tB.t);
 		ctx.restore();
 	};
 };
@@ -162,38 +150,45 @@ function drawStartFinish() {
 		ctx.arc(startFinish.l, startFinish.t, startFinish.r, 0, 2 * Math.PI, false);
 		ctx.strokeStyle = "#fff";
 		ctx.lineWidth = 5;
+		ctx.stroke();
+		ctx.fillStyle = ctx.createPattern(imageObj, 'repeat');
+		ctx.fill();
+
+		ctx.beginPath();
+		ctx.arc(startFinish.l, startFinish.t, (startFinish.r - 40), 0, 2 * Math.PI, false);
+		ctx.stroke();
 		ctx.shadowColor = "#fff";
 		ctx.shadowBlur = 200;
 		ctx.shadowOffsetX = 0;
 		ctx.shadowOffsetY = 0;
-		ctx.stroke();
-		ctx.fillStyle = ctx.createPattern(imageObj, 'repeat');
+		ctx.fillStyle = "rgb(33,40,48)";
 		ctx.fill();
+		drawTextAlongArc(ctx, 'Start / Finish', startFinish.l, startFinish.t, startFinish.r - 50, (Math.PI/4), startFinish.txtAngle, "#fff");
 	ctx.restore();
 };
 
 function drawEngineTrails() {
 	ctx.shadowBlur = 60;
-	ctx.lineWidth = 2;
-	for (var i=0; i<engineTrailsArray.length; i++) {
+	ctx.lineWidth = 4;
+	for (var i=engineTrailsArray.length-1; i>=0; i--) {
 		var thisTrail = engineTrailsArray[i];
+		thisTrail.l += thisTrail.speedH;
+		thisTrail.t += thisTrail.speedV;
 		ctx.save();
-			ctx.strokeStyle = thisTrail.color;
+        	ctx.fillStyle = thisTrail.color;
 			ctx.shadowColor = thisTrail.color;
-			ctx.globalAlpha = 1 - (thisTrail.r * 0.03);
+			ctx.globalAlpha = thisTrail.r;
 			ctx.translate(thisTrail.l, thisTrail.t);
 			ctx.rotate(thisTrail.heading);
-			if (i%2==0) {
-				ctx.translate(-6, -10);
-			}
-			else ctx.translate(6, -10);
+			if (thisTrail.engine==0) ctx.translate(-6, -20);
+			else ctx.translate(6, -20);
 			ctx.beginPath();
-			ctx.arc(0, 0, thisTrail.r, trailArcStartStop[0], trailArcStartStop[1], false);
-		    ctx.stroke();
+			ctx.arc(0, 0, thisTrail.r, 0, Math.PI*2, false);
+		    ctx.fill();
 		ctx.restore();
-		thisTrail.r+=((0.1*delta)*(thisTrail.r*0.1));
-		if ((1 - (thisTrail.r * 0.03)) < 0) engineTrailsArray.splice(engineTrailsArray.indexOf(thisTrail), 1);
-	}
+		thisTrail.r-=0.01*delta;
+		if (thisTrail.r < 0) engineTrailsArray.splice(engineTrailsArray.indexOf(thisTrail), 1);
+	};
 };
 
 function drawScoreBoard(game, player, opponents) {
