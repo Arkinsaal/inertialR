@@ -10,32 +10,10 @@ function getNewGuid() {
 };
 
 function verticalCollision(pt, pl, tr) {
-	return (
-        (
-            (pt-24 < tr.t) &&
-            (pl-24 > tr.l) &&
-            (pl+10 < tr.r)
-        ) ||
-        (
-            (pt+4 > tr.b) &&
-            (pl-24 > tr.l) &&
-            (pl+10 < tr.r)
-        )
-    );
+	return ((pt-24 < tr.t) || (pt+4 > tr.b));
 };
 function horizontalCollision(pl, pt, tr) {
-	return (
-        (
-            (pl-24 < tr.l) &&
-            (pt-24 > tr.t) &&
-            (pt+10 < tr.b)
-        ) ||
-        (
-            (pl+4 > tr.r) &&
-            (pt-24 > tr.t) &&
-            (pt+10 < tr.b)
-        )
-    );
+	return ((pl-24 < tr.l) || (pl+4 > tr.r));
 };
 
 function blockCollision(pl, pt, tr) {
