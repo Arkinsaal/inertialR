@@ -31,6 +31,20 @@ module.exports = {
 		};
 		callback();
 	},
+	removePlayerFromLobby: function(player) {
+		for (var i=0; i<playersInLobby.length;i++) {
+			if (playersInLobby[i].guid==player.guid) {
+				playersInLobby.splice(i, 1);
+				return;
+			};
+		};
+		// clean up games
+		for (var key in activeGames) {
+			if (activeGames[key] && activeGames[key].players.length==0) {
+				delete activeGames[key];
+			}
+		};
+	},
 	createNewGame: function(game, callback) {
 		activeGames[game.guid] = game;
 		callback();

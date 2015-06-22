@@ -39,8 +39,6 @@ function drawPlayer() {
 			engineTrailsArray.push(new EngineTrail([player.l-10, player.t-10], pHead, player.color));
 		};
 	ctx.restore();
-
-    
 };
 
 function drawOpponents() {
@@ -111,7 +109,7 @@ function drawCheckPoints() {
 			ctx.arc(cP.l, cP.t, cP.r, 0, 2 * Math.PI, false);
 			ctx.closePath();
 			ctx.stroke();
-			if (cP.r>0) drawTextAlongArc(ctx, 'Checkpoint', cP.l, cP.t, cP.r - 10, (Math.PI/2), cP.txtAngle, 'green');
+			if (cP.r>20) drawTextAlongArc(ctx, 'Checkpoint', cP.l, cP.t, cP.r - 10, (Math.PI/2), cP.txtAngle, 'rgb(0,255,0)');
 			cP.txtAngle+=0.01;
 		};
 	ctx.restore();
@@ -120,56 +118,46 @@ function drawCheckPoints() {
 function drawObstacles() {
 	for (var i=0; i < currentMatch.blackholes.length;i++) {
 		var bH = currentMatch.blackholes[i];
-		ctx.save();
+		bgctx.save();
 			var tO = currentMatch.blackholes[i];
-			var grd=ctx.createRadialGradient(tO.l,tO.t,10,tO.l,tO.t,tO.r);
+			var grd=bgctx.createRadialGradient(tO.l,tO.t,10,tO.l,tO.t,tO.r);
 			grd.addColorStop(0,"black");
 			grd.addColorStop(1,"transparent");
-			ctx.beginPath();
-		    ctx.fillStyle = grd;
-			ctx.arc(tO.l, tO.t, tO.r, 0, 2 * Math.PI, false);
-			ctx.closePath();
-			ctx.fill();
-		ctx.restore();
+			bgctx.beginPath();
+		    bgctx.fillStyle = grd;
+			bgctx.arc(tO.l, tO.t, tO.r, 0, 2 * Math.PI, false);
+			bgctx.closePath();
+			bgctx.fill();
+		bgctx.restore();
 	};
-	for (var i=0; i < currentMatch.trackBlocks.length;i++) {
-		var tB = currentMatch.trackBlocks[i];
-		ctx.save();
-		    ctx.fillStyle = trackBlocks[i].color;
-			ctx.lineWidth = 2;
-		    ctx.strokeStyle = (trackBlocks[i].active)?"rgb(175,175,175)":"rgb(100,100,100)";
-		    ctx.fillRect(tB.l, tB.t, tB.r-tB.l, tB.b-tB.t);
-			ctx.strokeRect(tB.l, tB.t, tB.r-tB.l, tB.b-tB.t);
-		ctx.restore();
-	};
+
 };
 
 function drawStartFinish() {
-	ctx.save();
-		ctx.beginPath();
-		ctx.arc(startFinish.l, startFinish.t, startFinish.r, 0, 2 * Math.PI, false);
-		ctx.strokeStyle = "#fff";
-		ctx.lineWidth = 5;
-		ctx.stroke();
-		ctx.fillStyle = ctx.createPattern(imageObj, 'repeat');
-		ctx.fill();
+	bgctx.save();
+		bgctx.beginPath();
+		bgctx.arc(startFinish.l, startFinish.t, startFinish.r, 0, 2 * Math.PI, false);
+		bgctx.strokeStyle = "#fff";
+		bgctx.lineWidth = 5;
+		bgctx.stroke();
+		bgctx.fillStyle = ctx.createPattern(imageObj, 'repeat');
+		bgctx.fill();
 
-		ctx.beginPath();
-		ctx.arc(startFinish.l, startFinish.t, (startFinish.r - 40), 0, 2 * Math.PI, false);
-		ctx.stroke();
-		ctx.shadowColor = "#fff";
-		ctx.shadowBlur = 200;
-		ctx.shadowOffsetX = 0;
-		ctx.shadowOffsetY = 0;
-		ctx.fillStyle = "rgb(33,40,48)";
-		ctx.fill();
-		drawTextAlongArc(ctx, 'Start / Finish', startFinish.l, startFinish.t, startFinish.r - 50, (Math.PI/4), startFinish.txtAngle, "#fff");
-	ctx.restore();
+		bgctx.beginPath();
+		bgctx.arc(startFinish.l, startFinish.t, (startFinish.r - 40), 0, 2 * Math.PI, false);
+		bgctx.stroke();
+		bgctx.shadowColor = "#fff";
+		bgctx.shadowBlur = 200;
+		bgctx.shadowOffsetX = 0;
+		bgctx.shadowOffsetY = 0;
+		bgctx.fillStyle = "rgb(33,40,48)";
+		bgctx.fill();
+		drawTextAlongArc(bgctx, 'Start / Finish', startFinish.l, startFinish.t, startFinish.r - 50, (Math.PI/4), startFinish.txtAngle, "#fff");
+	bgctx.restore();
 };
 
 function drawEngineTrails() {
 	ctx.shadowBlur = 60;
-	ctx.lineWidth = 4;
 	for (var i=engineTrailsArray.length-1; i>=0; i--) {
 		var thisTrail = engineTrailsArray[i];
 		thisTrail.l += thisTrail.speedH;
@@ -188,18 +176,11 @@ function drawEngineTrails() {
 		ctx.restore();
 		thisTrail.r-=0.01*delta;
 		if (thisTrail.r < 0) engineTrailsArray.splice(engineTrailsArray.indexOf(thisTrail), 1);
+
+		for (var j=0; j<currentMatch.blackholes.length; j++) {
+			handleBlackhole(thisTrail, currentMatch.blackholes[j], 2);
+		};
 	};
-};
-
-function drawScoreBoard(game, player, opponents) {
-
-	ctx.strokeStyle = "rgb(100,100,100)";
-	ctx.fillStyle = player.color;
-	ctx.strokeRect(canvas.width - 200, 0, 200, 100);
-
-	ctx.font="16px Arial";
-	ctx.fillText(player.lap + " / " + game.laps,canvas.width - 180,20);
-	ctx.fillText(player.lapTimes[0]/1000 + "s",canvas.width - 180,40);
 };
 
 function createGameListElement(game) {

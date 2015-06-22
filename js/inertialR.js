@@ -2,6 +2,7 @@ var canvas = null,
 	ctx = null;
 
 var engineTrailsArray = [];
+var blackholeParticleArray = [];
 var trailArcStartStop = [(Math.PI + (0.25*Math.PI)), ((2*Math.PI) - (0.25*Math.PI))];
 
 var gamesPlayed = 0;
@@ -36,7 +37,7 @@ var startFinish = {
 
 var constant = {
 	turnRate: 0.2,
-	turnRateDecel: 0.3,
+	turnRateDecel: 0.9,
 	accelRate: 0.1,
 	friction: 0.995,
 	degsToRads: 0.0174532925
@@ -51,16 +52,18 @@ var imageObj = new Image();
 
 var updateEntity = function (entity, deltaT, opp) {
 
-	if (player.keys[37]) entity.yaw -= constant.turnRate;
-	if (player.keys[39]) entity.yaw += constant.turnRate;
-	if (!player.keys[37] && entity.yaw<0) {
-		entity.yaw += constant.turnRateDecel;
-		if (entity.yaw > 0) entity.yaw = 0;
+	var reduce = true;
+
+	if (player.keys[37]) {
+		entity.yaw -= constant.turnRate;
+		reduce=false;
 	};
-	if (!player.keys[39] && entity.yaw>0) {
-		entity.yaw -= constant.turnRateDecel;
-		if (entity.yaw < 0) entity.yaw = 0;
+	if (player.keys[39]) {
+		entity.yaw += constant.turnRate;
+		reduce=false;
 	};
+
+	if (reduce) entity.yaw = entity.yaw*constant.turnRateDecel;
 
 	entity.heading += entity.yaw * deltaT;
 	entity.speedV = entity.speedV*constant.friction;
@@ -222,10 +225,20 @@ function returnToLobby() {
 	$('#lobby').show();
 	$('#playerProgressPanel').hide();
 	$('#finish').hide();
-	$('#playerProgressPanel').html("");
+	$('#playerProgressPanel').html('' +
+        '<div class="medHeader">Lap Times</div>' +
+        '<div id="progressHeader">' +
+            '<div>Player</div>' +
+            '<div>Lap</div>' +
+            '<div>Checkpoints</div>' +
+            '<div>Time</div>' +
+            '<div class="clear"></div>' +
+        '</div>'
+    );
 	socket.emit('returnToLobby', currentMatch);
 	resetPlayerPosSpeed(player);
 	currentMatch = new Game('freeRun', 1, "Unlimited");
+	opponents = [];
 	beginEvent();
 };
 
@@ -238,10 +251,14 @@ function finishEvent(pl) {
 };
 
 function beginEvent() {
+	bgctx.clearRect ( 0 , 0 , canvas.width, canvas.height );
+	drawStartFinish();
+	drawObstacles();
 	function countDown(count) {
 		if (count==0) {
 			$('#countdown').html("GO!");
 			then = Date.now();
+			forceStop = false;
 			main();
 			setTimeout(function() {
 				$('#countdown').hide();
@@ -258,6 +275,7 @@ function beginEvent() {
 		if (currentMatch.guid) socket.emit('gameStart', currentMatch);
 		currentMatch.inProgress = true;
 		$('#waitingForPlayers').hide();
+		forceStop = false;
 		player.touchedCount=0;
 		if (currentMatch.guid) {
 			countDown(3);
@@ -265,6 +283,7 @@ function beginEvent() {
 			$('#countdown').show();
 		} else {
 			then = Date.now();
+			forceStop = false;
 			main();
 		};
 	};
@@ -273,14 +292,12 @@ function beginEvent() {
 var render = function () {
 	ctx.clearRect ( 0 , 0 , canvas.width, canvas.height );
 
-	drawStartFinish();
 	drawCheckPoints();
 
-	drawPlayer();
 	drawOpponents();
 
+	drawPlayer();
 	drawEngineTrails();
-	drawObstacles();
 };
 
 // The main game loop
@@ -316,11 +333,17 @@ var main = function () {
 
 function init() {
 	$('#waitingForPlayers').show();
+
+	forceStop = true;
+
+  	bgCanvas = document.getElementById('backgroundCanvas');
+	bgctx = bgCanvas.getContext("2d");
+
   	canvas = document.getElementById('canvas');
 	ctx = canvas.getContext("2d");
 
-	canvas.width = 1300;
-	canvas.height = 900;
+	canvas.width = bgCanvas.width = 1300;
+	canvas.height = bgCanvas.height = 900;
 
 	if (currentMatch.guid) {
 	    socket.on('newOpponent', registerOpponent);

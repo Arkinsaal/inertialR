@@ -32,6 +32,10 @@ io.on('connection', function(socket){
 	// user connected
   	console.log('a user connected');
 
+    socket.on('kickUser', function(player) {
+
+    });
+
     socket.on('goToLobby', function(player) {
         allClients[findClient(socket)].player = player;
         inertialR.addPlayerToLobby(player, function() {
@@ -95,7 +99,8 @@ io.on('connection', function(socket){
         if (inertialR.getActiveGames()[client.game]) inertialR.getActiveGames()[client.game].players.splice(inertialR.getActiveGames()[client.game].players.indexOf(client.player), 1);      // remove player from active game
         io.to(client.game).emit('playerLeft', client.player);                                                                                   // tell all other players in game that a player has left
         io.emit('lobbyGamesUpdate', inertialR.getActiveGames());                                                                                // let everyone know of game update
-        allClients.splice(clientIndex, 1);                                                                                                      // remove client from list
+        allClients.splice(clientIndex, 1);                                                                                                      // remove client from list   
+        inertialR.removePlayerFromLobby(client.player);
 
         console.log('a user disconnected');
   	});

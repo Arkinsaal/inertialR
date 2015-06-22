@@ -80,7 +80,7 @@ function block(left, right, top, bottom) {
 function Checkpoint() {
 	this.l = 200 + (Math.random()*1000);
 	this.t = 200 + (Math.random()*600);
-	this.r = 70;
+	this.r = 0;
 	this.touched = false;
 	this.txtAngle = Math.random()*6;
 };

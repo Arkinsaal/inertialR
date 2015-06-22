@@ -64,11 +64,6 @@ function handleBlackhole(entity, bH, t) {
 
         entity.speedV = entity.speedV - (tDiff*multplier);
         entity.speedH = entity.speedH - (lDiff*multplier);
-
-        if (dPerc > 0.8) {
-            entity.speedV = entity.speedV*0.999;
-            entity.speedH = entity.speedH*0.999;
-        };
     };
 };
 

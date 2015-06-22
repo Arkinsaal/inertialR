@@ -23,11 +23,25 @@ body * {
 	width: calc(100% - 400px);
 	float:left;
 	position: relative;
+	background-color: rgb(33,40,48);
 }
-#gameArea > #canvas {
+
+#gameArea > #backgroundCanvas {
+	position:absolute;
+	top: 0;
+	left: 0;
 	height: 100%;
 	width: 100%;
-	background-color: rgb(33,40,48);
+	z-index: 5;
+}
+
+#gameArea > #canvas {
+	position:absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	z-index: 10;
 }
 
 #gameDetails {
@@ -51,8 +65,10 @@ body * {
 	outline: none;
 	display: block;
 	margin: 10px auto;
-	background-color: #777;
+	background-color: rgb(33,40,48);
 	border-radius: 6px;
+	border: 2px solid rgb(125, 249, 255);
+	color: rgb(125, 249, 255);
 }
 #userLogin > #joinLobbyButton {
 	position: relative;
@@ -264,7 +280,7 @@ body * {
 
 .loginInputTitle {
 	padding-left: 20px;
-	color: #aaa;
+	color: rgb(125, 249, 255);
 	font-size: 12px;
 }
 
