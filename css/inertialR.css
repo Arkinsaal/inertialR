@@ -9,18 +9,31 @@ body * {
 	box-sizing: border-box;
 }
 
+body {
+	width: 100%;
+	position:relative;
+}
+
+.stretchyWrapper {
+	width: 100%;
+	max-width:1700px;
+	max-height:100vh;
+  padding-bottom: 70%;
+  position: relative;
+}
+
 #inertialR {
-	width: 1700px;
-	height: 900px;
+	position:absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
 	border: 1px solid white;
-	margin: auto;
 }
 
 #gameArea {
 	height: 100%;
-	width: -webkit-calc(100% - 400px);
-	width: -moz-calc(100% - 400px);
-	width: calc(100% - 400px);
+	width: 100%;
 	float:left;
 	position: relative;
 	background-color: rgb(33,40,48);
@@ -45,12 +58,32 @@ body * {
 }
 
 #gameDetails {
-	height: 100%;
-	width: 400px;
+	top: 0;
+  right: 0;
+  width: 400px;
+  height: 100%;
+  position: absolute;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease-in-out;
 	border-left: 1px solid white;
 	float:right;
+	z-index: 500;
 }
 
+#inertialR.openMenu #gameDetails {
+	transform: scaleX(1);
+}
+
+#toggleDetailsMenu {
+	width: 40px;
+	height: 40px;
+	background-color: blue;
+	position:absolute;
+	top: 0;
+	right: 0;
+	z-index: 501;
+}
 
 #userLogin {
 	height: 100%;

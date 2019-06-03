@@ -73,6 +73,6 @@ function handleCheckpoint(entity, cP) {
             entity.touchedCount++;
             playerTouchedCheckpoint(player);
         };
-        cP.touched = true;
+        if (entity == player) cP.touched = true;
     };
 };

@@ -3,8 +3,8 @@ function drawPlayer() {
 	var pHead = (player.heading)*constant.degsToRads;
 
 	ctx.save();
-	    ctx.strokeStyle = player.color;
-        ctx.fillStyle = player.color;
+	  ctx.strokeStyle = player.color;
+    ctx.fillStyle = player.color;
 		ctx.shadowColor = player.color;
 		ctx.shadowBlur = 40;
 		ctx.lineWidth = 3;
@@ -163,7 +163,7 @@ function drawEngineTrails() {
 		thisTrail.l += thisTrail.speedH;
 		thisTrail.t += thisTrail.speedV;
 		ctx.save();
-        	ctx.fillStyle = thisTrail.color;
+			ctx.fillStyle = thisTrail.color;
 			ctx.shadowColor = thisTrail.color;
 			ctx.globalAlpha = thisTrail.r;
 			ctx.translate(thisTrail.l, thisTrail.t);
@@ -172,7 +172,7 @@ function drawEngineTrails() {
 			else ctx.translate(6, -20);
 			ctx.beginPath();
 			ctx.arc(0, 0, thisTrail.r, 0, Math.PI*2, false);
-		    ctx.fill();
+			ctx.fill();
 		ctx.restore();
 		thisTrail.r-=0.01*delta;
 		if (thisTrail.r < 0) engineTrailsArray.splice(engineTrailsArray.indexOf(thisTrail), 1);

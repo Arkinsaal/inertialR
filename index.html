@@ -23,7 +23,8 @@
     	<title>Intertial R~</title>
     </head>
 	<body>
-        <div id="inertialR">
+        <div class="stretchyWrapper">
+        <div id="inertialR" class="openMenu">
             <div id="gameArea">
                 <canvas id="canvas"></canvas>
                 <canvas id="backgroundCanvas"></canvas>
@@ -38,6 +39,7 @@
                     3
                 </div>
             </div>
+            <div id="toggleDetailsMenu" onclick="toggleMenu()"></div>
             <div id="gameDetails">
                 <!-- Login Screen -->
                 <div id="userLogin">
@@ -87,6 +89,7 @@
                     </div>
                 </div>
             </div>
+        </div>
         </div>
         <script>
             $('#userColorInput').spectrum({
